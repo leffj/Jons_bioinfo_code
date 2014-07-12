@@ -4,10 +4,8 @@ __author__ = "Jonathan Leff"
 __version__ = "0.0.1"
 __email__ = "leff.jonathan@gmail.com"
 
-"""Calculate GC content for every sequence in a fasta file"""
+"""Calculate GC content for every sequence in a set of fasta files"""
 
-from Bio import SeqIO
-from Bio.SeqUtils import GC
 import argparse
 import sys
 import os
@@ -55,21 +53,6 @@ def main():
 
 		for i,j,k in zip(samples,seqIDs,GCs):
 			out.write('%s\t%s\t%s\n' %(i,j,k))
-
-
-def calc_gc(in_fp, ftype):
-	# calculate gc content for each sequence in a given fastx file and return sampleID,
-	# seqID, and GC content arrays
-	in_f = open(in_fp, "U")
-	samples = []
-	seqIDs = []
-	GCs = []
-	for seq_rec in SeqIO.parse(in_f,ftype):
-		nameSpl = seq_rec.name.split('_')
-		samples.append(nameSpl[0])
-		seqIDs.append(nameSpl[1])
-		GCs.append(GC(seq_rec.seq))
-	return samples,seqIDs,GCs
 
 
 
