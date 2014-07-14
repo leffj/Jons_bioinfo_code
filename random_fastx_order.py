@@ -78,7 +78,7 @@ def randomize_seq_order(input_fp,output_fp,file_type):
 	for i in randIds:
 		seqsRand.append(seqs[i])
 	out = open(output_fp,'w')
-	SeqIO.write(seqsRand, out, "fasta")
+	SeqIO.write(seqsRand, out, file_type)
 	out.close()
 
 
