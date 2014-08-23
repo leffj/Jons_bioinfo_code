@@ -11,6 +11,7 @@ import sys
 from Bio import SeqIO
 import random
 
+# script uses the reservoir sampling approach
 
 
 def main():
