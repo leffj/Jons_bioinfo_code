@@ -93,7 +93,7 @@ def main():
 		# print len(bc.seq)
 		# print barcodeDict[str(bc.seq)]
 		if len(bc.seq) == 13:
-			bc.seq = bc.seq[:12]
+			bc.seq = str(bc.seq)[:12]
 		if str(bc.seq) in barcodeDict:
 			number_matched += 1
 			sampleID = barcodeDict[str(bc.seq)]
