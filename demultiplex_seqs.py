@@ -43,8 +43,6 @@ def main():
 	mapping_fp = args.mapping_file_fp
 	rc = args.rev_comp_mapping_barcodes
 
-	print output_dir
-
 
 	if sequence_reads_fp.endswith('.gz'):
 		seqs = gzip.open(sequence_reads_fp,'rb')
@@ -89,11 +87,8 @@ def main():
 	number_matched = 0
 	printcounter = 0
 	for i,(seqFwd,bc,seqRev) in enumerate(izip(SeqIO.parse(seqs,'fastq'),SeqIO.parse(barcodes,'fastq'),SeqIO.parse(revSeqs,'fastq'))):
-		# print bc.seq
-		# print len(bc.seq)
-		# print barcodeDict[str(bc.seq)]
 		if len(bc.seq) == 13:
-			bc.seq = str(bc.seq)[:12]
+			bc = bc[:12]
 		if str(bc.seq) in barcodeDict:
 			number_matched += 1
 			sampleID = barcodeDict[str(bc.seq)]
