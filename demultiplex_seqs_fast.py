@@ -63,9 +63,9 @@ def main():
 		output_dir = '%s_demultiplexed' % (input_file_basename)
 	if not os.path.exists(output_dir):
 		os.makedirs(output_dir)
-	# else:
-	# 	print "Output directory already exists. Delete and try again."
-	# 	exit()
+	else:
+		print "Output directory already exists. Delete and try again."
+		exit()
 
 	time = str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
 	sys.stdout.write('Start time: '+time+'\n')
