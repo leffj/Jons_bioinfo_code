@@ -10,8 +10,6 @@ import sys
 import os
 from os.path import split, splitext
 from time import gmtime, strftime
-# from Bio import SeqIO
-# from Bio.Seq import Seq
 from itertools import izip
 import gzip
 import argparse
@@ -80,16 +78,12 @@ def main():
 		if rc:
 			barcode = reverse_complement(barcode)
 		barcodeDict[barcode] = sampleID
-		# print barcode
 
 	# export sequences to files with sample IDs as filenames
 	number_seqs = 0
 	number_matched = 0
 	printcounter = 0
 	for i, ((hFwd, seqFwd, qualFwd), (hbc, bc, bcQual), (hRev, seqRev, qualRev)) in enumerate(izip(basic_fastq_parser(seqs), basic_fastq_parser(barcodes), basic_fastq_parser(revSeqs))):
-		# print hbc, bc, bcQual
-		# print bc
-		# print bcQual
 		if len(bc) == 13:
 			bc = bc[:12]
 		if bc in barcodeDict:
@@ -131,9 +125,6 @@ def basic_fastq_parser(in_f):
 	lineno, head, seq, qual = 0, "", "", ""
 	for l in in_f:
 		lineno += 1
-		# print "line:" + str(lineno)
-		# print l.strip()
-		# print "modulo" + str(lineno%4)
 		if lineno%4 == 1: head = l.strip()
 		elif lineno%4 == 2: seq = l.strip()
 		elif lineno%4 == 0:
@@ -142,7 +133,6 @@ def basic_fastq_parser(in_f):
 
 
 def write_fastq(header, seq, qual, out_f):
-	# out_f.write('apple%spear' % (' brown '))
 	out_f.write('%s\n%s\n+\n%s' % (header, seq, qual))
 
 reverse_complement = lambda x: ''.join([{'A':'T','C':'G','G':'C','T':'A'}[B] for B in x][::-1])
