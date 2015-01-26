@@ -10,8 +10,6 @@ import sys
 import os
 from os.path import split, splitext
 from time import gmtime, strftime
-from Bio import SeqIO
-from Bio.Seq import Seq
 from itertools import izip
 import gzip
 import argparse
@@ -78,26 +76,25 @@ def main():
 		sampleID = line.strip().split('\t')[0]
 		barcode = line.strip().split('\t')[1]
 		if rc:
-			barcode = str(Seq(barcode).reverse_complement())
+			barcode = reverse_complement(barcode)
 		barcodeDict[barcode] = sampleID
-		# print barcode
 
 	# export sequences to files with sample IDs as filenames
 	number_seqs = 0
 	number_matched = 0
 	printcounter = 0
-	for i,(seqFwd,bc,seqRev) in enumerate(izip(SeqIO.parse(seqs,'fastq'),SeqIO.parse(barcodes,'fastq'),SeqIO.parse(revSeqs,'fastq'))):
-		if len(bc.seq) == 13:
+	for i, ((hFwd, seqFwd, qualFwd), (hbc, bc, bcQual), (hRev, seqRev, qualRev)) in enumerate(izip(basic_fastq_parser(seqs), basic_fastq_parser(barcodes), basic_fastq_parser(revSeqs))):
+		if len(bc) == 13:
 			bc = bc[:12]
-		if str(bc.seq) in barcodeDict:
+		if bc in barcodeDict:
 			number_matched += 1
-			sampleID = barcodeDict[str(bc.seq)]
+			sampleID = barcodeDict[bc]
 			fpFwd = output_dir + "/" + sampleID + "_1.fq"
 			with open(fpFwd, 'a') as handle1:
-				SeqIO.write(seqFwd, handle1, 'fastq')
+				write_fastq(hFwd, seqFwd, qualFwd, handle1)
 			fpRev = output_dir + "/" + sampleID + "_2.fq"
 			with open(fpRev, 'a') as handle2:
-				SeqIO.write(seqRev, handle2, 'fastq')
+				write_fastq(hRev, seqRev, qualRev, handle2)
 			if(printcounter == 1000):
 				pct_kept = number_matched / number_seqs * 100
 				sys.stdout.write('\r')
@@ -120,9 +117,26 @@ def main():
 	sys.stdout.write('Seqs processed: %d Percent kept: %5.1f%%' % (number_seqs,pct_kept))
 	sys.stdout.flush()
 				
-
 	time = str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
 	sys.stdout.write('\n'+'End time: '+time+'\n')
+
+
+def basic_fastq_parser(in_f):
+	lineno, head, seq, qual = 0, "", "", ""
+	for l in in_f:
+		lineno += 1
+		if lineno%4 == 1: head = l.strip()
+		elif lineno%4 == 2: seq = l.strip()
+		elif lineno%4 == 0:
+			qual = l.strip()
+			yield head, seq, qual
+
+
+def write_fastq(header, seq, qual, out_f):
+	out_f.write('%s\n%s\n+\n%s\n' % (header, seq, qual))
+
+reverse_complement = lambda x: ''.join([{'A':'T','C':'G','G':'C','T':'A'}[B] for B in x][::-1])
+
 
 if __name__ == "__main__":
     main()
