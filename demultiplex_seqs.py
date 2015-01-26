@@ -41,7 +41,20 @@ def main():
 	mapping_fp = args.mapping_file_fp
 	rc = args.rev_comp_mapping_barcodes
 
+	time = str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
+	sys.stdout.write('Start time: '+time+'\n')
 
+	seqs, revSeqs, barcodes, mapping, output_dir = setup(sequence_reads_fp, 
+		reverse_reads_fp, output_dir, barcode_reads_fp, mapping_fp)
+
+	demultiplex(mapping, seqs, barcodes, revSeqs, output_dir, rc)
+
+	time = str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
+	sys.stdout.write('\n'+'End time: '+time+'\n')
+
+
+def setup(sequence_reads_fp, reverse_reads_fp, output_dir, 
+	barcode_reads_fp, mapping_fp):
 	if sequence_reads_fp.endswith('.gz'):
 		seqs = gzip.open(sequence_reads_fp,'rb')
 	else:
@@ -64,10 +77,10 @@ def main():
 	else:
 		print "Output directory already exists. Delete and try again."
 		exit()
+	return seqs, revSeqs, barcodes, mapping, output_dir
 
-	time = str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
-	sys.stdout.write('Start time: '+time+'\n')
 
+def demultiplex(mapping, seqs, barcodes, revSeqs, output_dir, rc):
 	# create dictionary with sample IDs and barcodes
 	barcodeDict = {}
 	for line in mapping:
@@ -116,9 +129,6 @@ def main():
 	sys.stdout.write('\r')
 	sys.stdout.write('Seqs processed: %d Percent kept: %5.1f%%' % (number_seqs,pct_kept))
 	sys.stdout.flush()
-				
-	time = str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
-	sys.stdout.write('\n'+'End time: '+time+'\n')
 
 
 def basic_fastq_parser(in_f):
