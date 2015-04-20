@@ -7,6 +7,7 @@ __email__ = "leff.jonathan@gmail.com"
 """ Take multiple datasets and cluster them using UCLUST. The output will be a fasta file with
 	centroids for each cluster and a text file listing each input sequence, the file origin, and
 	which cluster (ie OTU) it was clustered into.
+	USEARCH is assumed to be called via 'usearch7'
 """
 
 import argparse
