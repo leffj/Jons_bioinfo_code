@@ -16,7 +16,7 @@ import argparse
 
 
 parser = argparse.ArgumentParser(description=
-	"Demultiplex Illumina sequences based on fusion barcodes and stores sequences for individual files in separate files. NOTE: demultiplexing is based on order of sequences in the index and read files and DOES NOT check headers.")
+	"Demultiplex Illumina sequences based on barcode sequences and store sequences for individual samples in separate files. NOTE: demultiplexing is based on order of sequences in the index and read files and DOES NOT check headers.")
 parser.add_argument('-i','--sequence_reads_fp', required=True,\
     help='The sequence reads in fastq format')
 parser.add_argument('-r','--reverse_reads_fp', required=True,\
