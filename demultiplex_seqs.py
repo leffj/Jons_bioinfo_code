@@ -91,7 +91,7 @@ def demultiplex(mapping, seqs, barcodes, revSeqs, output_dir, rc):
 		if rc:
 			barcode = reverse_complement(barcode)
 		if barcode in barcodeDict:
-			raise ValueError("Duplicate baarcodes are not allowed in the mapping file.")
+			raise ValueError("Duplicate barcodes are not allowed in the mapping file.")
 		barcodeDict[barcode] = sampleID
 
 	# export sequences to files with sample IDs as filenames
