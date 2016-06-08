@@ -17,16 +17,19 @@ import argparse
 
 parser = argparse.ArgumentParser(description=
 	"Demultiplex Illumina sequences based on barcode sequences and store sequences for individual samples in separate files. NOTE: demultiplexing is based on order of sequences in the index and read files and DOES NOT check headers.")
-parser.add_argument('-i','--sequence_reads_fp', required=True,\
+req = parser.add_argument_group('required arguments')
+req.add_argument('-i','--sequence_reads_fp', required=True,\
     help='The sequence reads in fastq format')
-parser.add_argument('-r','--reverse_reads_fp', required=True,\
+req.add_argument('-r','--reverse_reads_fp', required=True,\
     help='The reverse sequence reads in fastq format')
-parser.add_argument('-b','--barcode_reads_fp', required=True,\
+req.add_argument('-b','--barcode_reads_fp', required=True,\
     help='The index (barcode) reads in fastq format')
-parser.add_argument('-m','--mapping_file_fp', required=True,\
+req.add_argument('-m','--mapping_file_fp', required=True,\
     help='The the mapping file with barcodes as second column in txt format')
 parser.add_argument('-o','--output_dir',\
 	help='The output directory')
+parser.add_argument('-p','--prefix', default="", 
+	help='The prefix for each paired read suffix. The default is: "sampleID_1.fq" and "sampleID_2.fq". To change to "sampleID_R1.fq" and "sampleID_R2", use "-p R"')
 parser.add_argument('-c','--rev_comp_mapping_barcodes',action='store_true',\
    	    help='should the mapping file barcodes be reverse complemented?',default=False)
 
@@ -47,7 +50,7 @@ def main():
 	seqs, revSeqs, barcodes, mapping, output_dir = setup(sequence_reads_fp, 
 		reverse_reads_fp, output_dir, barcode_reads_fp, mapping_fp)
 
-	demultiplex(mapping, seqs, barcodes, revSeqs, output_dir, rc)
+	demultiplex(mapping, seqs, barcodes, revSeqs, output_dir, args.prefix, rc)
 
 	time = str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
 	sys.stdout.write('\n'+'End time: '+time+'\n')
@@ -80,7 +83,7 @@ def setup(sequence_reads_fp, reverse_reads_fp, output_dir,
 	return seqs, revSeqs, barcodes, mapping, output_dir
 
 
-def demultiplex(mapping, seqs, barcodes, revSeqs, output_dir, rc):
+def demultiplex(mapping, seqs, barcodes, revSeqs, output_dir, pre, rc):
 	# create dictionary with sample IDs and barcodes
 	barcodeDict = {}
 	for line in mapping:
@@ -104,10 +107,10 @@ def demultiplex(mapping, seqs, barcodes, revSeqs, output_dir, rc):
 		if bc in barcodeDict:
 			number_matched += 1
 			sampleID = barcodeDict[bc]
-			fpFwd = output_dir + "/" + sampleID + "_1.fq"
+			fpFwd = output_dir + "/" + sampleID + "_" + pre + "1.fq"
 			with open(fpFwd, 'a') as handle1:
 				write_fastq(hFwd, seqFwd, qualFwd, handle1)
-			fpRev = output_dir + "/" + sampleID + "_2.fq"
+			fpRev = output_dir + "/" + sampleID + "_" + pre + "2.fq"
 			with open(fpRev, 'a') as handle2:
 				write_fastq(hRev, seqRev, qualRev, handle2)
 			if(printcounter == 1000):
